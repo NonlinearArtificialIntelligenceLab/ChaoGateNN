@@ -1,24 +1,23 @@
 import jax
 import jax.numpy as jnp
 import equinox as eqx
+
 from beartype import beartype as typechecker
 from typing import Protocol, runtime_checkable, Tuple
-
 from jaxtyping import Float
 from jax.typing import ArrayLike
 
 
 @runtime_checkable
 class MapLike(Protocol):
-    def __call__(self, x: ArrayLike) -> ArrayLike:  # type: ignore
-        ...
+    def __call__(self, x: ArrayLike) -> ArrayLike: ...
 
 
 class LogisticMap(eqx.Module):
     a: float = 4
 
     @typechecker
-    def __call__(self, x: ArrayLike) -> ArrayLike:  # type: ignore
+    def __call__(self, x: ArrayLike) -> ArrayLike:
         return self.a * x * (1 - x)
 
 
@@ -30,11 +29,12 @@ class LorenzMap(eqx.Module):
     steps: int = 1000
 
     @typechecker
-    def __call__(self, x: ArrayLike) -> ArrayLike:  # type: ignore
+    def __call__(self, x: ArrayLike) -> ArrayLike:
         def lorenz_step(
             i: int, state: Tuple[Float, Float, Float]
         ) -> Tuple[Float, Float, Float]:
             x, y, z = state
+            # Lorenz equations
             dx = self.sigma * (y - x)
             dy = x * (self.rho - z) - y
             dz = x * y - self.beta * z
@@ -64,7 +64,7 @@ class DuffingMap(eqx.Module):
     steps: int = 1000
 
     @typechecker
-    def __call__(self, x: ArrayLike) -> ArrayLike:  # type: ignore
+    def __call__(self, x: ArrayLike) -> ArrayLike:
         def duffing_step(
             i: int, state: Tuple[Float, Float, Float]
         ) -> Tuple[Float, Float, Float]:
@@ -85,8 +85,8 @@ class DuffingMap(eqx.Module):
 
             return x_new, v_new, t_new
 
-        initial_state = (x, 0.0, 0.0)
+        initial_state = (x, 0.0, 0.0)  # 0 velocity and 0 time
 
         final_state = jax.lax.fori_loop(0, self.steps, duffing_step, initial_state)
 
-        return final_state[0]
+        return final_state[0]  # return position value as the chaotic output
