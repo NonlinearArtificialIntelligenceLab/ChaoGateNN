@@ -55,56 +55,65 @@ def make_step(
     return loss, model, opt_state
 
 
+def train_gate(a, gate_name, Y):
+    Map = LogisticMap(a=a)
+    chao_gate = ChaoGate(DELTA=0.0, X0=0.0, X_THRESHOLD=1.0, Map=Map)
+    optim = optax.adabelief(3e-4)
+    opt_state = optim.init(eqx.filter(chao_gate, eqx.is_inexact_array))
+
+    epochs = 1000
+    for epoch in trange(epochs, desc=f"Training {gate_name} gate with a={a}"):
+        loss, chao_gate, opt_state = make_step(chao_gate, X, Y, optim, opt_state)
+        _, grads = compute_loss(chao_gate, X, Y)
+        grad_norm_value = grad_norm(grads)
+
+    pred_ys = jax.vmap(chao_gate)(X)
+    num_correct = jnp.sum((pred_ys > 0.5) == Y)
+    final_accuracy = num_correct / len(X)
+    return (
+        a,
+        loss,
+        final_accuracy,
+        grad_norm_value,
+        chao_gate.DELTA,
+        chao_gate.X0,
+        chao_gate.X_THRESHOLD,
+    )
+
+
 def main():
     output_dir = "../output/logistic_sweep/"
-    # Sweep the logistic map parameter 'a' from 0 to 4
-    metrics_dict = {}
-    results_dict = {}
+    a_values = jnp.linspace(0.0, 4.0, num=40)  # 40 steps from 0 to 4
+
     for gate_name, Y in logic_gates.items():
-        metrics_dict[gate_name] = []
-        results_dict[gate_name] = []
-        for a in jnp.linspace(0.0, 4.0, num=40):  # 50 steps from 0 to 4
-            Map = LogisticMap(a=a)
-            chao_gate = ChaoGate(DELTA=1.0, X0=1.0, X_THRESHOLD=1.0, Map=Map)
-            optim = optax.adabelief(3e-4)
-            opt_state = optim.init(eqx.filter(chao_gate, eqx.is_inexact_array))
+        # Parallelize the training for different values of 'a'
+        results = jax.pmap(lambda a: train_gate(a, gate_name, Y))(a_values)
 
-            epochs = 1000
-            for epoch in trange(
-                epochs, desc=f"Training {gate_name} gate with a={a:.2f}"
-            ):
-                loss, chao_gate, opt_state = make_step(
-                    chao_gate, X, Y, optim, opt_state
-                )
-                _, grads = compute_loss(chao_gate, X, Y)
-                grad_norm_value = grad_norm(grads)
+        # Extract metrics and results
+        metrics = jnp.array(
+            [(a, loss, acc, grad_norm) for a, loss, acc, grad_norm, _, _, _ in results]
+        )
+        gate_results = jnp.array(
+            [
+                (a, delta, x0, x_threshold)
+                for a, _, _, _, delta, x0, x_threshold in results
+            ]
+        )
 
-            pred_ys = jax.vmap(chao_gate)(X)
-            num_correct = jnp.sum((pred_ys > 0.5) == Y)
-            final_accuracy = (num_correct / len(X)).item()
-            metrics_dict[gate_name].append(
-                (a, loss.item(), final_accuracy, grad_norm_value)
-            )
-            results_dict[gate_name].append(
-                (a, chao_gate.DELTA, chao_gate.X0, chao_gate.X_THRESHOLD)
-            )
+        # Save results
+        np.savetxt(
+            f"{output_dir}{gate_name}_metrics.csv", np.array(metrics), delimiter=","
+        )
+        np.savetxt(
+            f"{output_dir}{gate_name}_results.csv",
+            np.array(gate_results),
+            delimiter=",",
+        )
 
-    # Print results
-    for gate_name, metrics in metrics_dict.items():
+        # Print results
         print(f"\nResults for {gate_name} gate:")
-        for a, loss, accuracy, grad_norm_value in metrics:
-            print(
-                f"a={a:.2f}, Loss={loss:.6f}, Accuracy={accuracy:.2f}, Grad Norm={grad_norm_value:.6f}"
-            )
-
-    # transform into arrays and save using numpy savetxt
-    for gate_name, metrics in metrics_dict.items():
-        metrics = jnp.array(metrics)
-        np.savetxt(f"{output_dir}{gate_name}_metrics.txt", metrics, delimiter=",")
-
-    for gate_name, results in results_dict.items():
-        results = jnp.array(results)
-        np.savetxt(f"{output_dir}{gate_name}_results.txt", results, delimiter=",")
+        for a, loss, accuracy, _ in metrics:
+            print(f"a={a:.2f}, Loss={loss:.6f}, Accuracy={accuracy:.2f}")
 
     return 0
 
