@@ -63,21 +63,24 @@ def main():
     for gate_name, Y in logic_gates.items():
         metrics_dict[gate_name] = []
         results_dict[gate_name] = []
-        for beta in jnp.geomspace(1e-2, 4.0, num=40):  # 50 steps from 0 to 4
+        for beta in jnp.linspace(0.0, 5.0, num=40):  # 50 steps from 0 to 4
             Map = DuffingMap(beta=beta)
             chao_gate = ChaoGate(DELTA=1.0, X0=1.0, X_THRESHOLD=1.0, Map=Map)
             optim = optax.adabelief(3e-4)
             opt_state = optim.init(eqx.filter(chao_gate, eqx.is_inexact_array))
 
-            epochs = 1000
+            epochs = 4000
             for epoch in trange(
-                epochs, desc=f"Training {gate_name} gate with a={beta:.2f}"
+                epochs, desc=f"Training {gate_name} gate with beta={beta:.2f}"
             ):
                 loss, chao_gate, opt_state = make_step(
                     chao_gate, X, Y, optim, opt_state
                 )
                 _, grads = compute_loss(chao_gate, X, Y)
                 grad_norm_value = grad_norm(grads)
+
+                if loss < 1e-3:
+                    break
 
             pred_ys = jax.vmap(chao_gate)(X)
             num_correct = jnp.sum((pred_ys > 0.5) == Y)
@@ -92,9 +95,9 @@ def main():
     # Print results
     for gate_name, metrics in metrics_dict.items():
         print(f"\nResults for {gate_name} gate:")
-        for beta, loss, accuracy, grad_norm_value in metrics:
+        for a, loss, accuracy, grad_norm_value in metrics:
             print(
-                f"a={beta:.2f}, Loss={loss:.6f}, Accuracy={accuracy:.2f}, Grad Norm={grad_norm_value:.6f}"
+                f"a={a:.2f}, Loss={loss:.6f}, Accuracy={accuracy:.2f}, Grad Norm={grad_norm_value:.6f}"
             )
 
     # transform into arrays and save using numpy savetxt

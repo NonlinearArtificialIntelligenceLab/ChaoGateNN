@@ -69,7 +69,7 @@ def main():
             optim = optax.adabelief(3e-4)
             opt_state = optim.init(eqx.filter(chao_gate, eqx.is_inexact_array))
 
-            epochs = 1000
+            epochs = 4000
             for epoch in trange(
                 epochs, desc=f"Training {gate_name} gate with a={a:.2f}"
             ):
@@ -78,6 +78,9 @@ def main():
                 )
                 _, grads = compute_loss(chao_gate, X, Y)
                 grad_norm_value = grad_norm(grads)
+
+                    if loss < 1e-3:
+                        break
 
             pred_ys = jax.vmap(chao_gate)(X)
             num_correct = jnp.sum((pred_ys > 0.5) == Y)
