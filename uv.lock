@@ -199,14 +199,13 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "beartype" },
-    { name = "dysts" },
+    { name = "diffrax" },
     { name = "equinox" },
     { name = "ipython" },
     { name = "jax", extra = ["cuda12"] },
     { name = "jupyter" },
     { name = "jupyterlab" },
     { name = "matplotlib" },
-    { name = "numba" },
     { name = "optax" },
     { name = "ruff" },
     { name = "tqdm" },
@@ -221,7 +220,7 @@ plotting = [
 [package.metadata]
 requires-dist = [
     { name = "beartype", specifier = ">=0.18.5" },
-    { name = "dysts", specifier = ">=0.95" },
+    { name = "diffrax", specifier = ">=0.6.0" },
     { name = "equinox", specifier = ">=0.11.5" },
     { name = "ipython", specifier = ">=8.26.0" },
     { name = "jax", extras = ["cuda12"], specifier = ">=0.4.31" },
@@ -229,7 +228,6 @@ requires-dist = [
     { name = "jupyterlab", specifier = ">=4.2.5" },
     { name = "matplotlib", specifier = ">=3.9.2" },
     { name = "matplotlib", marker = "extra == 'plotting'", specifier = ">=3.9.2" },
-    { name = "numba", specifier = ">=0.60.0" },
     { name = "optax", specifier = ">=0.2.3" },
     { name = "ruff", specifier = ">=0.6.3" },
     { name = "seaborn", marker = "extra == 'plotting'", specifier = ">=0.13.2" },
@@ -379,17 +377,21 @@ wheels = [
 ]
 
 [[package]]
-name = "dysts"
-version = "0.95"
+name = "diffrax"
+version = "0.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "numpy" },
-    { name = "scipy" },
-    { name = "tqdm" },
+    { name = "equinox" },
+    { name = "jax" },
+    { name = "jaxtyping" },
+    { name = "lineax" },
+    { name = "optimistix" },
+    { name = "typeguard" },
+    { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/fe/54/967afdd89caa6aaff942d1cb9731f084e522fd42686b14ab0b7ad075f912/dysts-0.95.tar.gz", hash = "sha256:d0e7770c2d447fd4bf3f525c5d69bf7cab8e7ff93e1607a0b8707747f0034727", size = 25402939 }
+sdist = { url = "https://files.pythonhosted.org/packages/b5/e4/398bb4bc2a547017e4b97c64a5376b171a361469425c420b04353e5daa4e/diffrax-0.6.0.tar.gz", hash = "sha256:937207070bd7fdfe99178e23ec1787a630df7e3969b381e072ca6a14f5e2f3d3", size = 132416 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a2/10/eadf433dbaf0307ec49d66a880072dc52e947c168c766291dfbf4eba235c/dysts-0.95-py3-none-any.whl", hash = "sha256:5b3f6854d6611d784a2e51ebf4bcea8d3966f1f9a975384377c317418d9c1e57", size = 25398977 },
+    { url = "https://files.pythonhosted.org/packages/97/cc/2132120d964b94cfd68f0eca83b88f8098078ef073097daad0d813c2414d/diffrax-0.6.0-py3-none-any.whl", hash = "sha256:7a59a796fd91e9c1cb20c37696c9f758681a3f24e72ff354a5a6aa335d3cde3a", size = 171328 },
 ]
 
 [[package]]
@@ -973,16 +975,18 @@ wheels = [
 ]
 
 [[package]]
-name = "llvmlite"
-version = "0.43.0"
+name = "lineax"
+version = "0.0.6"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/9f/3d/f513755f285db51ab363a53e898b85562e950f79a2e6767a364530c2f645/llvmlite-0.43.0.tar.gz", hash = "sha256:ae2b5b5c3ef67354824fb75517c8db5fbe93bc02cd9671f3c62271626bc041d5", size = 157069 }
+dependencies = [
+    { name = "equinox" },
+    { name = "jax" },
+    { name = "jaxtyping" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/01/7e/efc92d19905ea7cd0a9777d09da06f9dc8d49ae56d4ac9a1983aee66564e/lineax-0.0.6.tar.gz", hash = "sha256:c3d4863ddb0595b69c19326b97c4cc2498d75a495ce8d34517ae2d7c2da459e6", size = 44465 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0b/67/9443509e5d2b6d8587bae3ede5598fa8bd586b1c7701696663ea8af15b5b/llvmlite-0.43.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:f99b600aa7f65235a5a05d0b9a9f31150c390f31261f2a0ba678e26823ec38f7", size = 31064409 },
-    { url = "https://files.pythonhosted.org/packages/a2/9c/24139d3712d2d352e300c39c0e00d167472c08b3bd350c3c33d72c88ff8d/llvmlite-0.43.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:35d80d61d0cda2d767f72de99450766250560399edc309da16937b93d3b676e7", size = 28793145 },
-    { url = "https://files.pythonhosted.org/packages/bf/f1/4c205a48488e574ee9f6505d50e84370a978c90f08dab41a42d8f2c576b6/llvmlite-0.43.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:eccce86bba940bae0d8d48ed925f21dbb813519169246e2ab292b5092aba121f", size = 42857276 },
-    { url = "https://files.pythonhosted.org/packages/00/5f/323c4d56e8401c50185fd0e875fcf06b71bf825a863699be1eb10aa2a9cb/llvmlite-0.43.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:df6509e1507ca0760787a199d19439cc887bfd82226f5af746d6977bd9f66844", size = 43871781 },
-    { url = "https://files.pythonhosted.org/packages/c6/94/dea10e263655ce78d777e78d904903faae39d1fc440762be4a9dc46bed49/llvmlite-0.43.0-cp312-cp312-win_amd64.whl", hash = "sha256:7a2872ee80dcf6b5dbdc838763d26554c2a18aa833d31a2635bff16aafefb9c9", size = 28107442 },
+    { url = "https://files.pythonhosted.org/packages/af/7d/84e6d61250c8b5323c993b194931cf91dd20bb610ad3653e08fa57a4a2d8/lineax-0.0.6-py3-none-any.whl", hash = "sha256:3538f1085287f312f9f3759dc0c2dd36c1b22e86260ee8976240948b943aa685", size = 67048 },
 ]
 
 [[package]]
@@ -1169,23 +1173,6 @@ wheels = [
 ]
 
 [[package]]
-name = "numba"
-version = "0.60.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "llvmlite" },
-    { name = "numpy" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/3c/93/2849300a9184775ba274aba6f82f303343669b0592b7bb0849ea713dabb0/numba-0.60.0.tar.gz", hash = "sha256:5df6158e5584eece5fc83294b949fd30b9f1125df7708862205217e068aabf16", size = 2702171 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/eb/5c/b5ec752c475e78a6c3676b67c514220dbde2725896bbb0b6ec6ea54b2738/numba-0.60.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:d7da4098db31182fc5ffe4bc42c6f24cd7d1cb8a14b59fd755bfee32e34b8404", size = 2647866 },
-    { url = "https://files.pythonhosted.org/packages/65/42/39559664b2e7c15689a638c2a38b3b74c6e69a04e2b3019b9f7742479188/numba-0.60.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:38d6ea4c1f56417076ecf8fc327c831ae793282e0ff51080c5094cb726507b1c", size = 2650208 },
-    { url = "https://files.pythonhosted.org/packages/67/88/c4459ccc05674ef02119abf2888ccd3e2fed12a323f52255f4982fc95876/numba-0.60.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:62908d29fb6a3229c242e981ca27e32a6e606cc253fc9e8faeb0e48760de241e", size = 3466946 },
-    { url = "https://files.pythonhosted.org/packages/8b/41/ac11cf33524def12aa5bd698226ae196a1185831c05ed29dc0c56eaa308b/numba-0.60.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:0ebaa91538e996f708f1ab30ef4d3ddc344b64b5227b67a57aa74f401bb68b9d", size = 3761463 },
-    { url = "https://files.pythonhosted.org/packages/ca/bd/0fe29fcd1b6a8de479a4ed25c6e56470e467e3611c079d55869ceef2b6d1/numba-0.60.0-cp312-cp312-win_amd64.whl", hash = "sha256:f75262e8fe7fa96db1dca93d53a194a38c46da28b112b8a4aca168f0df860347", size = 2707588 },
-]
-
-[[package]]
 name = "numpy"
 version = "2.0.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1343,6 +1330,22 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/d6/5f/e8b09028b37a8c1c159359e59469f3504b550910d472d8ee59543b1735d9/optax-0.2.3.tar.gz", hash = "sha256:ec7ab925440b0c5a512e1f24fba0fb3e7d760a7fd5d2496d7a691e9d37da01d9", size = 205212 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a3/8b/7032a6788205e9da398a8a33e1030ee9a22bd9289126e5afed9aac33bcde/optax-0.2.3-py3-none-any.whl", hash = "sha256:083e603dcd731d7e74d99f71c12f77937dd53f79001b4c09c290e4f47dd2e94f", size = 289647 },
+]
+
+[[package]]
+name = "optimistix"
+version = "0.0.7"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "equinox" },
+    { name = "jax" },
+    { name = "jaxtyping" },
+    { name = "lineax" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b1/28/a090023b9cf0be1359c7a14d41ba19a9b299783dc83ed1441eb812649f0f/optimistix-0.0.7.tar.gz", hash = "sha256:0c649293b01c2029a5f9878fbb912d4977105830b4368b0d44b710b621c49ac3", size = 53113 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ed/c4/a118bcb37ee32af33b4260617936bb5f0fbe10b81b9fc9f79adfb6fb8b4c/optimistix-0.0.7-py3-none-any.whl", hash = "sha256:7d1b1b3ab5462142d38f7e1171b597e3df591c7c33de43f85435dc7c0b9aa317", size = 81528 },
 ]
 
 [[package]]
