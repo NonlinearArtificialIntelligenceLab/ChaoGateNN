@@ -2,6 +2,9 @@ import jax
 import jax.numpy as jnp
 import equinox as eqx
 
+from dysts.flows import Lorenz, Duffing
+
+
 from beartype import beartype as typechecker
 from typing import Protocol, runtime_checkable, Tuple
 from jaxtyping import Float
@@ -25,33 +28,62 @@ class LorenzMap(eqx.Module):
     sigma: float = 10
     rho: float = 28
     beta: float = 8 / 3
-    dt: float = 0.001
     steps: int = 1000
+    model: Lorenz = Lorenz()
+
+    def __init__(self, sigma:float =10, rho:float=28, beta:float = 8/3, n:int = 1000):
+        self.model = Lorenz()
+        self.sigma = sigma
+        self.rho = rho
+        self.beta = beta
+        self.steps = n
+        self.model = Lorenz()
+        self.model.sigma = sigma
+        self.model.rho = rho
+        self.model.beta = beta
 
     @typechecker
     def __call__(self, x: ArrayLike) -> ArrayLike:
-        def lorenz_step(
-            i: int, state: Tuple[Float, Float, Float]
-        ) -> Tuple[Float, Float, Float]:
-            x, y, z = state
-            # Lorenz equations
-            dx = self.sigma * (y - x)
-            dy = x * (self.rho - z) - y
-            dz = x * y - self.beta * z
-
-            # Euler method for updating
-            x = x + dx * self.dt
-            y = y + dy * self.dt
-            z = z + dz * self.dt
-
-            return x, y, z
 
         x0, y0, z0 = x, x, x
+        self.model.ic = jnp.array([x0, y0, z0])
 
-        final_state = jax.lax.fori_loop(0, self.steps, lorenz_step, (x0, y0, z0))
+        sol = self.model.make_trajectory(1000, resample=True)
 
         # Return the x-coordinate as the chaotic output
-        return final_state[0]
+        return sol[:, 0]
+
+# class LorenzMap(eqx.Module):
+#     sigma: float = 10
+#     rho: float = 28
+#     beta: float = 8 / 3
+#     dt: float = 0.001
+#     steps: int = 1000
+
+#     @typechecker
+#     def __call__(self, x: ArrayLike) -> ArrayLike:
+#         def lorenz_step(
+#             i: int, state: Tuple[Float, Float, Float]
+#         ) -> Tuple[Float, Float, Float]:
+#             x, y, z = state
+#             # Lorenz equations
+#             dx = self.sigma * (y - x)
+#             dy = x * (self.rho - z) - y
+#             dz = x * y - self.beta * z
+
+#             # Euler method for updating
+#             x = x + dx * self.dt
+#             y = y + dy * self.dt
+#             z = z + dz * self.dt
+
+#             return x, y, z
+
+#         x0, y0, z0 = x, x, x
+
+#         final_state = jax.lax.fori_loop(0, self.steps, lorenz_step, (x0, y0, z0))
+
+#         # Return the x-coordinate as the chaotic output
+#         return final_state[0]
 
 
 class DuffingMap(eqx.Module):
