@@ -4,7 +4,7 @@
 gates=("AND" "OR" "XOR" "NAND" "NOR" "XNOR")
 
 # Number of seeds
-NUM_SEEDS=10
+NUM_SEEDS=3
 PARALLEL_JOBS=1
 PLATFORM="cpu"
 
@@ -19,7 +19,7 @@ for gate in "${gates[@]}"; do
     # Iterate over each seed
     for seed in $(seq 0 $((NUM_SEEDS - 1))); do
         for a in $(seq 0 0.1 4); do
-            out_path="${OUTPUT_BASE_DIR}/Logistic/${gate}/a${a}_seed${seed}/"
+            out_path="${OUTPUT_BASE_DIR}/logistic/${gate}/a${a}_seed${seed}/"
             echo "Running logistic_chaogate.py for gate $gate with seed $seed and a=$a"
             JAX_PLATFORM_NAME=$PLATFORM python $LOGISTIC_SCRIPT --gate $gate --seed $seed --a $a --out_path $out_path &
         done
