@@ -4,15 +4,14 @@
 gates=("AND" "OR" "XOR" "NAND" "NOR" "XNOR")
 
 # Number of seeds
-NUM_SEEDS=3
+NUM_SEEDS=10
 PARALLEL_JOBS=1
 PLATFORM="cpu"
 
 LORENZ_SCRIPT="./scripts/lorenz_chaogate.py"
 OUTPUT_BASE_DIR="./output"
 
-# Number of steps for parameter 'a'
-num_steps=50
+
 
 # Iterate over each gate
 for gate in "${gates[@]}"; do

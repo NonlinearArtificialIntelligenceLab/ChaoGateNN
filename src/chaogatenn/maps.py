@@ -90,3 +90,35 @@ class DuffingMap(eqx.Module):
         final_state = jax.lax.fori_loop(0, self.steps, duffing_step, initial_state)
 
         return final_state[0]  # return position value as the chaotic output
+
+class RosslerMap(eqx.Module):
+    a: float = 0.2
+    b: float = 0.2
+    c: float = 5.7
+    dt: float = 0.001
+    steps: int = 1000
+
+    @typechecker
+    def __call__(self, x: ArrayLike) -> ArrayLike:
+        def rossler_step(
+            i: int, state: Tuple[Float, Float, Float]
+        ) -> Tuple[Float, Float, Float]:
+            x, y, z = state
+            # Rossler equations
+            dx = -y - z
+            dy = x + self.a * y
+            dz = self.b + z * (x - self.c)
+
+            # Euler method for updating
+            x = x + dx * self.dt
+            y = y + dy * self.dt
+            z = z + dz * self.dt
+
+            return x, y, z
+
+        x0, y0, z0 = x, x, x
+
+        final_state = jax.lax.fori_loop(0, self.steps, rossler_step, (x0, y0, z0))
+
+        # Return the x-coordinate as the chaotic output
+        return final_state[0]
