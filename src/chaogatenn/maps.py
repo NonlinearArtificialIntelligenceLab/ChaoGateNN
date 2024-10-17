@@ -122,3 +122,109 @@ class RosslerMap(eqx.Module):
 
         # Return the x-coordinate as the chaotic output
         return final_state[0]
+
+class ChenMap(eqx.Module):
+    a: float = 35.0
+    b: float = 3.0
+    c: float = 28.0
+    d: float = 1.0
+    dt: float = 0.001
+    steps: int = 1000
+
+    @typechecker
+    def __call__(self, x: ArrayLike) -> ArrayLike:
+        def chen_step(
+            i: int, state: Tuple[Float, Float, Float, Float]
+        ) -> Tuple[Float, Float, Float, Float]:
+            x, y, z, w = state
+            # Hyperchaotic Chen equations
+            dxdt = self.a * (y - x)
+            dydt = (self.c - self.a) * x - x * z + self.c * y
+            dzdt = x * y - self.b * z + w
+            dwdt = -self.d * w
+
+            # Euler method for updating
+            x_new = x + dxdt * self.dt
+            y_new = y + dydt * self.dt
+            z_new = z + dzdt * self.dt
+            w_new = w + dwdt * self.dt
+
+            return x_new, y_new, z_new, w_new
+
+        # Initial state, x and y as inputs, and z, w initialized
+        initial_state = (x, x, 0.0, 0.0)
+
+        # Perform the iterative steps
+        final_state = jax.lax.fori_loop(0, self.steps, chen_step, initial_state)
+
+        return final_state[2]  # return z value as the chaotic output
+
+class ChenMapRK4(eqx.Module):
+    a: float = 35.0
+    b: float = 3.0
+    c: float = 28.0
+    d: float = 1.0
+    dt: float = 0.001
+    steps: int = 1000
+
+    @typechecker
+    def __call__(self, x: ArrayLike) -> ArrayLike:
+        def chen_system(state: Tuple[Float, Float, Float, Float]) -> Tuple[Float, Float, Float, Float]:
+            x, y, z, w = state
+            dxdt = self.a * (y - x)
+            dydt = (self.c - self.a) * x - x * z + self.c * y
+            dzdt = x * y - self.b * z + w
+            dwdt = -self.d * w
+            return dxdt, dydt, dzdt, dwdt
+
+        def rk4_step(state: Tuple[Float, Float, Float, Float], dt: float) -> Tuple[Float, Float, Float, Float]:
+            k1 = chen_system(state)
+            k2 = chen_system(tuple(s + dt / 2 * k for s, k in zip(state, k1)))
+            k3 = chen_system(tuple(s + dt / 2 * k for s, k in zip(state, k2)))
+            k4 = chen_system(tuple(s + dt * k for s, k in zip(state, k3)))
+
+            return tuple(s + dt / 6 * (k1_i + 2 * k2_i + 2 * k3_i + k4_i)
+                        for s, k1_i, k2_i, k3_i, k4_i in zip(state, k1, k2, k3, k4))
+
+        # Initial state
+        initial_state = (x, x, 0.0, 0.0)
+
+        # Perform the iterative steps using RK4
+        final_state = jax.lax.fori_loop(0, self.steps, lambda i, state: rk4_step(state, self.dt), initial_state)
+
+        return final_state[2]  # return z value as the chaotic output
+
+class RosslerHyperchaosMap(eqx.Module):
+    a: float = 0.25
+    b: float = 3
+    c: float = 0.05
+    d: float = 5
+    dt: float = 0.01
+    steps: int = 1000
+
+    @typechecker
+    def __call__(self, x: ArrayLike) -> ArrayLike:
+        def rossler_system(state: Tuple[Float, Float, Float, Float]) -> Tuple[Float, Float, Float, Float]:
+            x, y, z, w = state
+            dxdt = -y - z
+            dydt = x + self.a * y + w
+            dzdt = self.b + z * x
+            dwdt = self.c * w + self.d * z
+            return dxdt, dydt, dzdt, dwdt
+
+        def rk4_step(state: Tuple[Float, Float, Float, Float], dt: float) -> Tuple[Float, Float, Float, Float]:
+            k1 = rossler_system(state)
+            k2 = rossler_system(tuple(s + dt / 2 * k for s, k in zip(state, k1)))
+            k3 = rossler_system(tuple(s + dt / 2 * k for s, k in zip(state, k2)))
+            k4 = rossler_system(tuple(s + dt * k for s, k in zip(state, k3)))
+
+            return tuple(s + dt / 6 * (k1_i + 2 * k2_i + 2 * k3_i + k4_i)
+                        for s, k1_i, k2_i, k3_i, k4_i in zip(state, k1, k2, k3, k4))
+
+        # Initial state
+        initial_state = (x, x, 0.0, 0.0)  # w = 0, z = 0 initial condition
+
+        # Perform the iterative steps using RK4
+        final_state = jax.lax.fori_loop(0, self.steps, lambda i, state: rk4_step(state, self.dt), initial_state)
+
+        return final_state[2]  # return z value as the chaotic output
