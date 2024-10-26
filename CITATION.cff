@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+title: Gradient based Optimization of Chaogates
+message: Please cite this software using these metadata.
+type: software
+authors:
+  - given-names: Anil
+    family-names: Radhakrishnan
+    email: aradhak5@ncsu.edu
+    affiliation: North Carolina State University
+    orcid: 'https://orcid.org/0000-0002-8084-9527'
+  - given-names: Sudeshna
+    family-names: Sinha
+    email: sudeshna@iisermohali.ac.in
+    affiliation: >-
+      Indian Institute of Science Education and Research
+      Mohali
+    orcid: 'https://orcid.org/0000-0002-1364-5276'
+  - given-names: Krishna
+    family-names: Murali
+    email: kmurali@annauniv.edu
+    affiliation: >-
+      Department of Physics, Anna University,
+      Chennai 600025, India
+    orcid: 'https://orcid.org/0000-0001-8055-1117'
+  - given-names: William
+    name-particle: L
+    family-names: Ditto
+    email: wditto@ncsu.edu
+    affiliation: North Carolina State Universty
+    orcid: 'https://orcid.org/0000-0002-7416-8012'
+repository-code: 'https://github.com/NonlinearArtificialIntelligenceLab/ChaoGateNN'
+abstract: >-
+  We present a method for configuring chaogates to replicate standard Boolean logic gate behavior using gradient-based
+  optimization. By defining a differentiable formulation of the chaogate encoding, we optimize its tunable parameters to
+  reconfigure the chaogate for standard logic gate functions. This novel approach allows us to bring the well-established
+  tools of machine learning to optimizing chaogates without the cost of high parameter count neural networks. We further
+  extend this approach to the simultaneous optimization of multiple gates for tuning logic circuits. Experimental results
+  demonstrate the viability of this technique across different nonlinear systems and configurations, offering a pathway to
+  automate parameter discovery for nonlinear computational devices.
+keywords:
+  - Machine Learning
+  - Nonlinear
+  - chaogate
+  - optimization
+license: MIT
