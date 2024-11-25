@@ -31,6 +31,31 @@ class ChaoGate(eqx.Module):
         )
 
 @jaxtyped(typechecker=typechecker)
+class NewChaoGate(eqx.Module):
+    DELTA_X: Float[Array, ""]
+    DELTA_Y: Float[Array, ""]
+    X0: Float[Array, ""]
+    X_THRESHOLD: Float[Array, ""]
+    Map: MapLike
+
+    def __init__(
+        self, DELTA_X: ArrayLike, DELTA_Y: ArrayLike, X0: ArrayLike, X_THRESHOLD: ArrayLike, Map: MapLike
+    ):
+        self.DELTA_X = jnp.array(DELTA_X)
+        self.DELTA_Y = jnp.array(DELTA_Y)
+        self.X0 = jnp.array(X0)
+        self.X_THRESHOLD = jnp.array(X_THRESHOLD)
+        self.Map = Map
+
+    @typechecker
+    def __call__(self, x: Bool[Array, "2"]) -> Float[Array, ""]:
+        x1, x2 = x
+
+        return jax.nn.sigmoid(
+            self.Map(self.X0 + x1 * self.DELTA_X + x2 * self.DELTA_Y) - self.X_THRESHOLD
+        )
+
+@jaxtyped(typechecker=typechecker)
 class NChaoGate(eqx.Module):
     DELTA: Float[Array, ""]
     X0: Float[Array, ""]
