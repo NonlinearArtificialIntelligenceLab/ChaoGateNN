@@ -20,6 +20,16 @@ class LogisticMap(eqx.Module):
     def __call__(self, x: ArrayLike) -> ArrayLike:
         return self.a * x * (1 - x)
 
+class HenonMap(eqx.Module):
+    a: float = 1.4
+    b: float = 0.3
+
+    @typechecker
+    def __call__(self, x: ArrayLike) -> ArrayLike:
+        x, y = x, x
+        x_new = 1 - self.a * x**2 + y
+        y_new = self.b * x
+        return x_new
 
 class LorenzMap(eqx.Module):
     sigma: float = 10
