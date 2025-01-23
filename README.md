@@ -11,7 +11,7 @@ This code base is uv compatible and pip installable.
 ### Authors
 Anil Radhakrishnan, Sudeshna Sinha, K. Murali ,William L. Ditto
 
-### Link to paper
+### [Link to paper](https://www.sciencedirect.com/science/article/pii/S0960077925000207)
 
 ### Key Results
 - A gradient-based optimization framework for tuning chaotic systems to match predefined logic gate behavior.
